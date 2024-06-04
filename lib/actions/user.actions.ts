@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { createAdminClient, createSessionClient } from "../appwrite";
 import { ID } from "node-appwrite";
 import { parseStringify } from "../utils";
+import { CountryCode, Products } from "plaid";
+import { plaidClient } from "../plaid";
 
 export const signIn = async ({ email, password }: signInProps) => {
   try {
@@ -41,7 +43,6 @@ export const signUp = async (userData: SignUpParams) => {
     console.error("Error", error);
   }
 };
-// ... your initilization functions
 
 export async function getLoggedInUser() {
   try {
@@ -62,3 +63,20 @@ export const logoutAccount = async () => {
     return null;
   }
 };
+
+export const createLinkToken =async ()=>{
+  try {
+    const tokenParams={
+      user:{
+        client_user_id: user.$id
+      },
+      client_name:user.name,
+      products:['auth'] as Products[],
+      language:'en',
+      country_codes:['US'] as CountryCode[],
+    }
+    const response = await plaidClient.linkTokenCreate(tokenParams);
+  } catch (error) {
+    console.log(error);
+  }
+}
